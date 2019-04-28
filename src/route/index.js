@@ -5,7 +5,7 @@ import {
 } from 'react-router-dom'
 import loadable from '@loadable/component'
 function asyncComponent(page) {
-    return loadable(() => import(`../pages/${page}/${page}`))
+    return loadable(() => import(/* webpackChunkName:"[request]" */`../pages/${page}/${page}`))
 }
 const routerConfig = [
     {

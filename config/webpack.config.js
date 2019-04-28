@@ -170,7 +170,7 @@ module.exports = function(webpackEnv) {
           (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
     },
     optimization: {
-      minimize: isEnvProduction,
+      minimize: false,//isEnvProduction,
       minimizer: [
         // This is only used in production mode
         new TerserPlugin({
@@ -237,11 +237,59 @@ module.exports = function(webpackEnv) {
       // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
       splitChunks: {
         chunks: 'all',
+        minSize: 10000, // 提高缓存利用率，这需要在http2/spdy
+        maxSize: 0,//没有限制
+        minChunks: 2,// 共享最少的chunk数，使用次数超过这个值才会被提取
+        maxAsyncRequests: 5,//最多的异步chunk数
+        maxInitialRequests: 5,// 最多的同步chunks数
+        automaticNameDelimiter: '~',// 多页面共用chunk命名分隔符
         name: false,
+        cacheGroups: {// 声明的公共chunk
+          vendor: {
+           // 过滤需要打入的模块
+            test: module => {
+              if (module.resource) {
+                const include = [/[\\/]node_modules[\\/]/].every(reg => {
+                  return reg.test(module.resource);
+                });
+                const exclude = [/[\\/]node_modules[\\/](react|redux|antd)/].some(reg => {
+                  return reg.test(module.resource);
+                });
+                return include && !exclude;
+              }
+              return false;
+            },
+            name: 'vendor',
+            priority: 50,// 确定模块打入的优先级
+            reuseExistingChunk: true,// 使用复用已经存在的模块
+          },
+          react: {
+            test({ resource }) {
+              return /[\\/]node_modules[\\/]react/.test(resource);
+            },
+            minSize: 10000,
+            minChunks: 1,
+            name: 'react',
+            priority: 20,
+            reuseExistingChunk: false,
+          },
+          antd: {
+            test: /[\\/]node_modules[\\/]antd/,
+            name: 'antd',
+            priority: 15,
+            reuseExistingChunk: true,
+          },
+        },
       },
       // Keep the runtime chunk separated to enable long term caching
       // https://twitter.com/wSokra/status/969679223278505985
-      runtimeChunk: true,
+      runtimeChunk: {
+        name: 'runtime'
+      },
+      chunkIds: 'named',
+      moduleIds: 'hashed',
+      usedExports: true,
+      sideEffects: true,
     },
     resolve: {
       // This allows you to set a fallback for where Webpack should look for modules.
