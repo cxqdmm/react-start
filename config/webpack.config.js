@@ -265,6 +265,10 @@ module.exports = function(webpackEnv) {
           },
           react: {
             test({ resource }) {
+              console.log(resource)
+              if (/[\\/]node_modules[\\/]react/.test(resource)) {
+                debugger
+              }
               return /[\\/]node_modules[\\/]react/.test(resource);
             },
             minSize: 10000,
