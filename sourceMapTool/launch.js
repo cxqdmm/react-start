@@ -1,11 +1,12 @@
 
 const { AsyncSeriesWaterfallHook } = require("tapable");
 const GitCommand = require('./gitCommand');
- class AsyncHook {
+
+class AsyncHook {
   constructor() {
     this.hook = new AsyncSeriesWaterfallHook(['data']);
   }
-  tapAsync(name,fn) {
+  tapAsync(name, fn) {
     this.hook.tapAsync(name, fn);
     return this;
   }
@@ -22,36 +23,36 @@ class GitHook {
     this._cwd = this.options.cwd;
     this.hook = new AsyncHook();
   }
-  tap(actionType, args = [], validate) {
-    if (typeof (actionType) == 'string' && actionType.trim() != '') {
-      this.addCommand(actionType.trim(), args, validate);
+  tap(action, options = {}) {
+    if (typeof (action) == 'string' && action.trim() != '') {
+      this.addCommand(action.trim(), options);
     } else {
-      console.warn('actionType must be a string')
+      console.warn('action must be a string')
     }
     return this;
   }
-  addCommand(actionType, args, validate = void 0) {
+  addCommand(action, options) {
     let nextCmd = new GitCommand({
-      actionType: actionType,
+      action: action,
       next: null,
-      args: args,
-      validate: validate,
+      options: options,
       cwd: this._cwd
     })
-    this.tapAsync(actionType, nextCmd);
+    this.tapAsync(action, nextCmd);
   }
   tapAsync(name, cmd) {
     this.hook.tapAsync(name, async (input, callback) => {
-        if (cmd.validate(input)) {
-          try {
-            const output = await cmd.run();
-            callback(null, output.trim());
-          } catch (error) {
-            callback(error);
-          }
-        } else {
-          callback(null, input)
+      const shouldExec = cmd.shouldExec(input);
+      if (shouldExec) {
+        try {
+          const output = await cmd.run();
+          callback(null, output.trim());
+        } catch (error) {
+          callback(error);
         }
+      } else {
+        callback(null, input)
+      }
     })
   }
   run(callback) {

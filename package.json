@@ -123,6 +123,8 @@
     ]
   },
   "devDependencies": {
+    "cli-spinner": "^0.2.10",
+    "inquirer": "^6.3.1",
     "node-sass": "^4.12.0"
   }
 }

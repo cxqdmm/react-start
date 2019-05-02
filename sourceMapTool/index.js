@@ -34,10 +34,10 @@ mainProcess
       if (err) {
         return callback(err)
       }
-      if (!hasNewMapfile) {
-        log(chalk.yellow('没有需要提交的sourcemap'));
-        return false;
-      }
+      // if (!hasNewMapfile) {
+      //   log(chalk.yellow('没有新的sourcemap'));
+      //   return false;
+      // }
       callback(null);
     })
   })
@@ -46,14 +46,22 @@ mainProcess
     let gitHook = new GitHook({ cwd: targetDir });
     gitHook
         .tap('rev-parse --abbrev-ref HEAD')
-        .tap('checkout jyyt')
+        .tap('checkout master', {
+          shouldExec: (data) => /^master$/.test(data),
+        })
         .tap('pull')
         .tap('status')
-        .tap('add', '.', (data) => /use "git add"/.test(data))
+        .tap('add .', {
+          shouldExec: /use "git add"/,
+        })
         .tap('status')
-        .tap('commit', ['-m', '"提交更改"'], (data) => /Changes to be committed/.test(data))
+        .tap('commit -m "提交更改"',  {
+          shouldExec: /Changes to be committed/,
+        })
         .tap('status')
-        .tap('push', ['origin', 'master'], (data) => /use "git push"/.test(data))
+        .tap('push origin master', {
+          shouldExec: /use "git push"/,
+        })
         .run(err => {
             if (err) {
               callback(err);

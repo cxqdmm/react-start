@@ -1,41 +1,49 @@
 const { exec, execSync } = require('child_process');
 const path = require('path')
+const chalk = require('chalk');
+const Spinner = require('cli-spinner').Spinner;
+
+function createSpinner(title = "") {
+  const spinner = new Spinner(title)
+  spinner.setSpinnerString(0);
+  return spinner;
+}
 class GitCommand {
-  constructor(options = {}) {
-    this._actionType = options.actionType;
-    this._cwd = options.cwd;
+  constructor(args = {}) {
+    this._options = args.options || {};
+    this._action = args.action;
+    this._cwd = args.cwd;
     this._next = null;
-    this._args = options.args || [];
-    this._validate = options.validate || void 0;
+    this._shouldExec = this._options.shouldExec || void 0;
     this._gitOptions = { cwd: this._cwd };
   }
-  validate(input) {
-    if (typeof(this._validate) == 'function') {
-      return this._validate(input);
-    } else if (this._validate instanceof RegExp) {
-      return this._validate.test(input);
+  shouldExec(input) {
+    if (typeof(this._shouldExec) == 'function') {
+      return this._shouldExec(input);
+    } else if (this._shouldExec instanceof RegExp) {
+      return this._shouldExec.test(input);
     } 
     return true;
   }
   async run() {
-    return await this.asyncAction(this._actionType, this._args);
+    return await this.asyncAction(this._action);
   }
 
-  asyncAction(actionType, args) {
+  asyncAction(action) {
     return new Promise((resolve, reject) => {
-      if (Array.isArray(args) || typeof (args) == 'string') {
-        const shell = ['git'].concat(actionType, args).join(' ')
-        exec(shell, this._gitOptions, (error, stdout, stderr) => {
-          // console.log(`${shell} [${this._gitOptions.cwd}]`)
-          if (error) {
-            return reject(stderr);
-          }
-          resolve(stdout);
-        })
-
-      } else {
-        reject('参数必须是数组或者字符串')
-      }
+        const shell = ['git'].concat(action).join(' ')
+        const spinner = createSpinner(chalk.blueBright(shell));
+        spinner.start()
+        setTimeout(() => {
+          exec(shell, this._gitOptions, (error, stdout, stderr) => {
+            spinner.stop();
+            process.stdout.write('\n');
+            if (error) {
+              return reject(stderr);
+            }
+            resolve(stdout);
+          })
+        }, 300)
     })
   }
 
