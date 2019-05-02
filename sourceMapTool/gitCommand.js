@@ -7,7 +7,7 @@ class GitCommand {
     this._next = null;
     this._args = options.args || [];
     this._validate = options.validate || void 0;
-    this._gitOptions = { cwd: this._cwd, encoding: 'utf-8' };
+    this._gitOptions = { cwd: this._cwd };
   }
   validate(input) {
     if (typeof(this._validate) == 'function') {
@@ -26,13 +26,11 @@ class GitCommand {
       if (Array.isArray(args) || typeof (args) == 'string') {
         const shell = ['git'].concat(actionType, args).join(' ')
         exec(shell, this._gitOptions, (error, stdout, stderr) => {
-          console.log(`${shell} [${this._gitOptions.cwd}]`)
-          console.log(stdout);
-          console.log(stderr);
+          // console.log(`${shell} [${this._gitOptions.cwd}]`)
           if (error) {
-            return reject(error);
+            return reject(stderr);
           }
-          resolve(stdout + stderr);
+          resolve(stdout);
         })
 
       } else {

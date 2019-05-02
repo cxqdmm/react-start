@@ -1,16 +1,17 @@
 const path = require('path');
+const fs = require('fs');
 const { AsyncHook, GitHook } = require('./launch');
 const chalk = require('chalk');
 const { findFilesInDeep, copyFile, asyncForEach, log} = require('./util')
 
-const sourceDir = path.resolve(__dirname, '../webapp/script');
-const targetDir = path.resolve(__dirname, '../../finance-static-frontend-sourcemap/mxjd-vip-com');
+const sourceDir = path.resolve(__dirname, '../build');
+const targetDir = path.resolve(__dirname, '../../source-map/react-start');
 const fileRegex = /[^\/]*\.js\.map$/;
 
 const mainProcess = new AsyncHook();
 mainProcess
   .tapAsync('searchMapFile', (dir, callback) => {
-    log(chalk.yellow('搜索sourcemap文件。。。'));
+    log(chalk.yellow('搜索sourcemap文件'));
     let sourceMaps = findFilesInDeep(sourceDir, fileRegex);
     if (Array.isArray(sourceMaps) && sourceMaps.length) {
       callback(null, sourceMaps);
@@ -19,14 +20,23 @@ mainProcess
     }
   })
   .tapAsync('copyMapfile', (data, callback) => {
-    log(chalk.yellow('copy文件到', targetDir));
+    log(chalk.yellow('move sourcemap to ', targetDir));
+    let hasNewMapfile = false;
     asyncForEach(data, async (file, next) => {
-      const text = await copyFile(file.obsolutePath, path.join(targetDir, file.fileName));
-      log(chalk.green(text));
+      const targetPath = path.join(targetDir, file.fileName);
+      if (!fs.existsSync(targetPath)) {
+        hasNewMapfile = true;
+        const text = await copyFile(file.obsolutePath, targetPath);
+        log(chalk.green(text));
+      }
       next();
     },(err) => {
       if (err) {
         return callback(err)
+      }
+      if (!hasNewMapfile) {
+        log(chalk.yellow('没有需要提交的sourcemap'));
+        return false;
       }
       callback(null);
     })
@@ -35,8 +45,9 @@ mainProcess
     log(chalk.yellow('提交文件到git'));
     let gitHook = new GitHook({ cwd: targetDir });
     gitHook
-        .tap('checkout', 'master')
-        .tap('pull', ['origin', 'master'])
+        .tap('rev-parse --abbrev-ref HEAD')
+        .tap('checkout jyyt')
+        .tap('pull')
         .tap('status')
         .tap('add', '.', (data) => /use "git add"/.test(data))
         .tap('status')
@@ -45,12 +56,16 @@ mainProcess
         .tap('push', ['origin', 'master'], (data) => /use "git push"/.test(data))
         .run(err => {
             if (err) {
-                console.log(err);
+              callback(err);
             }
         })
   })
   .callAsync((err) => {
-    log(chalk.red(err.message));
+    if (err instanceof Error) {
+      return log(chalk.red(err.message));
+    } else if (typeof(err) == 'string') {
+      log(chalk.red(err));
+    }
   })
 
 

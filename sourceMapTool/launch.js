@@ -45,7 +45,7 @@ class GitHook {
         if (cmd.validate(input)) {
           try {
             const output = await cmd.run();
-            callback(null, output);
+            callback(null, output.trim());
           } catch (error) {
             callback(error);
           }
