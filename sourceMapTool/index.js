@@ -45,9 +45,11 @@ mainProcess
     log(chalk.yellow('提交文件到git'));
     let gitHook = new GitHook({ cwd: targetDir });
     gitHook
-        .tap('rev-parse --abbrev-ref HEAD')
+        .tap('rev-parse --abbrev-ref HEAD', {
+          describe:'当前分支名',
+        })
         .tap('checkout master', {
-          shouldExec: (data) => /^master$/.test(data),
+          shouldExec: (data) => !/^master$/.test(data),
         })
         .tap('pull')
         .tap('status')

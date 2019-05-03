@@ -1,5 +1,4 @@
-const { exec, execSync } = require('child_process');
-const path = require('path')
+const { exec } = require('child_process');
 const chalk = require('chalk');
 const Spinner = require('cli-spinner').Spinner;
 
@@ -15,6 +14,7 @@ class GitCommand {
     this._cwd = args.cwd;
     this._next = null;
     this._shouldExec = this._options.shouldExec || void 0;
+    this._describe = this._options.describe || void 0;
     this._gitOptions = { cwd: this._cwd };
   }
   shouldExec(input) {
@@ -32,7 +32,7 @@ class GitCommand {
   asyncAction(action) {
     return new Promise((resolve, reject) => {
         const shell = ['git'].concat(action).join(' ')
-        const spinner = createSpinner(chalk.blueBright(shell));
+        const spinner = createSpinner(chalk.blueBright(this._describe || shell));
         spinner.start()
         setTimeout(() => {
           exec(shell, this._gitOptions, (error, stdout, stderr) => {
@@ -41,6 +41,7 @@ class GitCommand {
             if (error) {
               return reject(stderr);
             }
+            process.stdout.write(chalk.yellowBright(stdout))
             resolve(stdout);
           })
         }, 300)
