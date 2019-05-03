@@ -34,10 +34,10 @@ mainProcess
       if (err) {
         return callback(err)
       }
-      // if (!hasNewMapfile) {
-      //   log(chalk.yellow('没有新的sourcemap'));
-      //   return false;
-      // }
+      if (!hasNewMapfile) {
+        log(chalk.yellow('没有新的sourcemap'));
+        return false;
+      }
       callback(null);
     })
   })
