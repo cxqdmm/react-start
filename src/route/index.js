@@ -4,26 +4,19 @@ import {
     Redirect
 } from 'react-router-dom'
 import loadable from '@loadable/component'
-function asyncComponent(page) {
+function getComponent(page) {
     return loadable(() => import(/* webpackChunkName:"[request]" */`../pages/${page}/${page}`))
 }
 const routerConfig = [
     {
-        path: '/',
-        exact: true,
-        component: asyncComponent('home'),
+        path: '/hooks',
+        component: getComponent('hooks'),
+        route: [{
+          title: 'useState',
+          path: '/hooks/useState',
+          component: getComponent('useState'),
+        }],
     },
-    {
-        path: '/login',
-        exact: true,
-        component: asyncComponent('login'),
-    },
-    {
-        path: '/home',
-        exact: true,
-        requestAuth: true,
-        component: asyncComponent('home'),
-    }
 ]
 
 

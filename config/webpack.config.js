@@ -101,6 +101,15 @@ module.exports = function(webpackEnv) {
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       },
+      {
+        loader: require.resolve('less-loader'), // compiles Less to CSS
+        options: {
+          modifyVars: {
+    
+          },
+          javascriptEnabled: true,
+        },
+      }
     ].filter(Boolean);
     if (preProcessor) {
       loaders.push({
@@ -237,7 +246,7 @@ module.exports = function(webpackEnv) {
       // https://medium.com/webpack/webpack-4-code-splitting-chunk-graph-and-the-splitchunks-optimization-be739a861366
       splitChunks: {
         chunks: 'all',
-        minSize: 10000, // 提高缓存利用率，这需要在http2/spdy
+        minSize: 30000, // 提高缓存利用率，这需要在http2/spdy
         maxSize: 0,//没有限制
         minChunks: 2,// 共享最少的chunk数，使用次数超过这个值才会被提取
         maxAsyncRequests: 5,//最多的异步chunk数
@@ -271,8 +280,6 @@ module.exports = function(webpackEnv) {
               }
               return /[\\/]node_modules[\\/]react/.test(resource);
             },
-            minSize: 10000,
-            minChunks: 1,
             name: 'react',
             priority: 20,
             reuseExistingChunk: false,
