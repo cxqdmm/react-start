@@ -23,7 +23,8 @@ const getClientEnvironment = require('./env');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin-alt');
 const typescriptFormatter = require('react-dev-utils/typescriptFormatter');
-
+const SpeedMeasurePlugin = require('speed-measure-webpack-plugin');
+const smp = new SpeedMeasurePlugin();
 
 // Source maps are resource heavy and can cause out of memory issue for large source files.
 const shouldUseSourceMap = process.env.GENERATE_SOURCEMAP !== 'false';
@@ -116,7 +117,7 @@ module.exports = function(webpackEnv) {
     return loaders;
   };
 
-  return {
+  return smp.wrap({
     mode: isEnvProduction ? 'production' : isEnvDevelopment && 'development',
     // Stop compilation early in production
     bail: isEnvProduction,
@@ -173,7 +174,7 @@ module.exports = function(webpackEnv) {
           (info => path.resolve(info.absoluteResourcePath).replace(/\\/g, '/')),
     },
     optimization: {
-      minimize: false,//isEnvProduction,
+      minimize: isEnvProduction,
       minimizer: [
         // This is only used in production mode
         new TerserPlugin({
@@ -268,15 +269,14 @@ module.exports = function(webpackEnv) {
           },
           react: {
             test({ resource }) {
-              console.log(resource)
               if (/[\\/]node_modules[\\/]react/.test(resource)) {
-                debugger
+                console.log(resource)
               }
               return /[\\/]node_modules[\\/]react/.test(resource);
             },
             name: 'react',
             priority: 20,
-            reuseExistingChunk: false,
+            reuseExistingChunk: true,
           },
           antd: {
             test: /[\\/]node_modules[\\/]antd/,
@@ -744,5 +744,5 @@ module.exports = function(webpackEnv) {
     // Turn off performance processing because we utilize
     // our own hints via the FileSizeReporter
     performance: false,
-  };
+  });
 };

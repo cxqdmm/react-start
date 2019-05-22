@@ -5,7 +5,7 @@ import './hooks.less';
 const SubMenu = Menu.SubMenu;
 export default function Hooks(props) {
   return (
-    <div styleName="flex">  
+    <div styleName="flex root">  
       <Menu
         style={{ width: 256 }}
         defaultSelectedKeys={['1']}
@@ -16,8 +16,8 @@ export default function Hooks(props) {
           key="sub1"
           title={
             <span>
-              <Icon type="内置hooks" />
-              <span>Navigation Three</span>
+              <Icon type="appstore" />
+              <span>内置hooks</span>
             </span>
           }
         >
