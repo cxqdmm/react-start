@@ -1,17 +1,35 @@
 import React from 'react';
-import { Breadcrumb } from 'antd';
-import { Route, Link, BrowserRouter as Router, } from 'react-router-dom'
+import { Menu, Icon } from 'antd';
+import { Route, Link } from 'react-router-dom';
+import './hooks.less';
+const SubMenu = Menu.SubMenu;
 export default function Hooks(props) {
   return (
-    <div>  
-      <Breadcrumb>
-        <Breadcrumb.Item>Hooks</Breadcrumb.Item>
-      </Breadcrumb>
-      {
-        props.route.map(route => {
-          return <Link key={route.path} to={route.path}>{route.title}</Link>
-        })
-      }
+    <div styleName="flex">  
+      <Menu
+        style={{ width: 256 }}
+        defaultSelectedKeys={['1']}
+        defaultOpenKeys={['sub1']}
+        mode="inline"
+      >
+        <SubMenu
+          key="sub1"
+          title={
+            <span>
+              <Icon type="内置hooks" />
+              <span>Navigation Three</span>
+            </span>
+          }
+        >
+          {
+            props.route.map(route => {
+              return <Menu.Item key={route.path}>
+                <Link key={route.path} to={route.path}>{route.title}</Link>
+              </Menu.Item>
+            })
+          }
+        </SubMenu>
+      </Menu>
       <div>
         {
           props.route.map(route => {

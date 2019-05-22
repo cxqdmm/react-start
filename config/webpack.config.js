@@ -37,8 +37,11 @@ const useTypeScript = fs.existsSync(paths.appTsConfig);
 // style files regexes
 const cssRegex = /\.css$/;
 const cssModuleRegex = /\.module\.css$/;
+const lessRegex = /\.less$/;
+const lessModuleRegex = /\.module\.less$/;
 const sassRegex = /\.(scss|sass)$/;
 const sassModuleRegex = /\.module\.(scss|sass)$/;
+
 
 // This is the production and development configuration.
 // It is focused on developer experience, fast rebuilds, and a minimal bundle.
@@ -66,7 +69,7 @@ module.exports = function(webpackEnv) {
   const env = getClientEnvironment(publicUrl);
 
   // common function to get style loaders
-  const getStyleLoaders = (cssOptions, preProcessor) => {
+  const getStyleLoaders = (cssOptions, preProcessor, preProcessorOptions = {}) => {
     const loaders = [
       isEnvDevelopment && require.resolve('style-loader'),
       isEnvProduction && {
@@ -101,22 +104,13 @@ module.exports = function(webpackEnv) {
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
         },
       },
-      {
-        loader: require.resolve('less-loader'), // compiles Less to CSS
-        options: {
-          modifyVars: {
-    
-          },
-          javascriptEnabled: true,
-        },
-      }
     ].filter(Boolean);
     if (preProcessor) {
       loaders.push({
         loader: require.resolve(preProcessor),
-        options: {
+        options: Object.assign({
           sourceMap: isEnvProduction ? shouldUseSourceMap : isEnvDevelopment,
-        },
+        }, preProcessorOptions),
       });
     }
     return loaders;
@@ -405,6 +399,18 @@ module.exports = function(webpackEnv) {
                       },
                     },
                   ],
+                  [
+                    'react-css-modules',
+                    {
+                      generateScopedName: '[path]___[name]__[local]___[hash:base64:5]',
+                      filetypes: {
+                        '.less': {
+                          syntax: 'postcss-less'
+                        }
+                      },
+                      webpackHotModuleReloading: true,
+                    }
+                  ]
                 ],
                 // This is a feature of `babel-loader` for webpack (not Babel itself).
                 // It enables caching results in ./node_modules/.cache/babel-loader/
@@ -474,6 +480,70 @@ module.exports = function(webpackEnv) {
                 modules: true,
                 getLocalIdent: getCSSModuleLocalIdent,
               }),
+            },
+            // 针对业务less
+            {
+              test: lessRegex,
+              include: paths.appSrc,
+              exclude: lessModuleRegex,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+                  modules: true,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
+                },
+                'less-loader',
+                {
+                  modifyVars: {
+            
+                  },
+                  javascriptEnabled: true,
+                }
+              ),
+            },
+            // 针对第三方库的less 例如 antd
+            {
+              test: lessRegex,
+              exclude: [lessModuleRegex, paths.appSrc],
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
+                },
+                'less-loader',
+                {
+                  modifyVars: {
+            
+                  },
+                  javascriptEnabled: true,
+                }
+              ),
+            },
+            {
+              test: lessModuleRegex,
+              exclude: /node_modules/,
+              use: getStyleLoaders(
+                {
+                  importLoaders: 2,
+                  localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
+                  modules:true,
+                  sourceMap: isEnvProduction
+                    ? shouldUseSourceMap
+                    : isEnvDevelopment,
+                },
+                'less-loader',
+                {
+                  modifyVars: {
+            
+                  },
+                  javascriptEnabled: true,
+                }
+              ),
             },
             // Opt-in support for SASS (using .scss or .sass extensions).
             // By default we support SASS Modules with the
