@@ -13,6 +13,9 @@ export default function Hooks(props) {
         theme="dark"
         mode="inline"
       >
+        <Menu.Item key="1">
+          <Link to="/hooks/why">why hooks</Link>
+        </Menu.Item>
         <SubMenu
           key="sub1"
           title={

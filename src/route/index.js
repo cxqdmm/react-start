@@ -10,6 +10,7 @@ function getComponent(page) {
 const routerConfig = [
     {
       path: '/',
+      exact: true,
       component: getComponent('hooks'),
       route: [{
         title: 'useState',
@@ -21,6 +22,10 @@ const routerConfig = [
         path: '/hooks',
         component: getComponent('hooks'),
         route: [{
+          title: 'why hooks',
+          path: '/hooks/why',
+          component: getComponent('whyHooks'),
+        },{
           title: 'useState',
           path: '/hooks/useState',
           component: getComponent('useState'),
