@@ -8,8 +8,7 @@ export default function Hooks(props) {
     <div className="flex" styleName="root">  
       <Menu
         style={{ width: 256 }}
-        defaultSelectedKeys={[props.route[0].path]}
-        defaultOpenKeys={['sub1']}
+        defaultSelectedKeys={['1']}
         theme="dark"
         mode="inline"
       >

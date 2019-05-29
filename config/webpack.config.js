@@ -319,6 +319,8 @@ module.exports = function(webpackEnv) {
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
         'react-native': 'react-native-web',
         'view': path.resolve(process.cwd(), './src/views'),
+        'hooks': path.resolve(process.cwd(), './src/hooks'),
+        'util': path.resolve(process.cwd(), './src/util'),
       },
       plugins: [
         // Adds support for installing with Plug'n'Play, leading to faster installs and adding
@@ -557,6 +559,10 @@ module.exports = function(webpackEnv) {
                 },
                 'sass-loader'
               ),
+            },
+            {
+              test: /\.txt$/i,
+              use: 'raw-loader',
             },
             // "file" loader makes sure those assets get served by WebpackDevServer.
             // When you `import` an asset, you get its (virtual) filename.

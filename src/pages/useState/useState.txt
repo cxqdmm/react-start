@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Input } from 'antd';
 import Panel from 'view/panel';
-import Codebox from 'view/codebox/index';
+import Codebox from 'view/codebox';
 import txt from './useState.txt';
 
 export default function UseState(props) {
   const [state, setState] = useState({name:'', phone:''});
   return (
-    <div className="use-state">
+    < div className="use-state">
       <Panel breadcrumb={['hooks','useState']}>
           <Codebox code={txt}></Codebox>
           <Input  placeholder="姓名" value={state.name} onChange={e => {
