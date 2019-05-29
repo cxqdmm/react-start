@@ -3,7 +3,6 @@ import {Controlled as CodeMirror} from 'react-codemirror2'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/material.css';
 import 'codemirror/mode/jsx/jsx';
-import 'codemirror/mode/javascript/javascript.js';
 import './index.less';
 export default function Codebox(props) {
   return <CodeMirror
@@ -14,7 +13,7 @@ export default function Codebox(props) {
     y: 50
   }}
   options={{
-    mode: 'xml',
+    mode: 'jsx',
     theme: 'material',
   }}
   onBeforeChange={(editor, data, value) => {
