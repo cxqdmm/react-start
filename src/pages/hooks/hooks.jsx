@@ -1,15 +1,16 @@
 import React from 'react';
 import { Menu, Icon } from 'antd';
 import { Route, Link } from 'react-router-dom';
-import './hooks.less';
+import './hooks.module.less';
 const SubMenu = Menu.SubMenu;
 export default function Hooks(props) {
   return (
-    <div styleName="flex root">  
+    <div className="flex" styleName="root">  
       <Menu
         style={{ width: 256 }}
-        defaultSelectedKeys={['1']}
+        defaultSelectedKeys={[props.route[0].path]}
         defaultOpenKeys={['sub1']}
+        theme="dark"
         mode="inline"
       >
         <SubMenu
@@ -30,7 +31,7 @@ export default function Hooks(props) {
           }
         </SubMenu>
       </Menu>
-      <div>
+      <div className="flex-1">
         {
           props.route.map(route => {
             return <Route key={route.path} exact path={route.path} component={route.component}/>

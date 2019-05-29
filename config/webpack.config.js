@@ -481,33 +481,9 @@ module.exports = function(webpackEnv) {
                 getLocalIdent: getCSSModuleLocalIdent,
               }),
             },
-            // 针对业务less
             {
               test: lessRegex,
-              include: paths.appSrc,
               exclude: lessModuleRegex,
-              use: getStyleLoaders(
-                {
-                  importLoaders: 2,
-                  localIdentName: '[path]___[name]__[local]___[hash:base64:5]',
-                  modules: true,
-                  sourceMap: isEnvProduction
-                    ? shouldUseSourceMap
-                    : isEnvDevelopment,
-                },
-                'less-loader',
-                {
-                  modifyVars: {
-            
-                  },
-                  javascriptEnabled: true,
-                }
-              ),
-            },
-            // 针对第三方库的less 例如 antd
-            {
-              test: lessRegex,
-              exclude: [lessModuleRegex, paths.appSrc],
               use: getStyleLoaders(
                 {
                   importLoaders: 2,
@@ -526,7 +502,6 @@ module.exports = function(webpackEnv) {
             },
             {
               test: lessModuleRegex,
-              exclude: /node_modules/,
               use: getStyleLoaders(
                 {
                   importLoaders: 2,

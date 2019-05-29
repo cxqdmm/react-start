@@ -1,8 +1,8 @@
 import {useState} from 'react';
 // 模拟去餐厅吃饭
 let store = {
-  menu: [],
-  selected: [],
+  name: '',
+  phone: '',
 }
 
 export default function getStore() {

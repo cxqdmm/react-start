@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
 import { routerConfig, RouteWithSubRoutes } from './route'
-
+import './css/common.less';
 import {
     BrowserRouter as Router
 } from 'react-router-dom'

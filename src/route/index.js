@@ -9,6 +9,15 @@ function getComponent(page) {
 }
 const routerConfig = [
     {
+      path: '/',
+      component: getComponent('hooks'),
+      route: [{
+        title: 'useState',
+        path: '/hooks/useState',
+        component: getComponent('useState'),
+      }],
+    },
+    {
         path: '/hooks',
         component: getComponent('hooks'),
         route: [{
