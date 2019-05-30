@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Input, Alert } from 'antd';
-import Panel from 'view/panel';
+import Panel from 'view/panel/panel';
 export default function UseState(props) {
   return (
     <div className="use-state">

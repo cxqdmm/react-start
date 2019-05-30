@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Input } from 'antd';
-import Panel from 'view/panel';
-import Codebox from 'view/codebox/index';
+import Panel from 'view/panel/panel';
+import Codebox from 'view/codebox/codebox';
 import txt from './useState.txt';
 
 export default function UseState(props) {
