@@ -9,10 +9,12 @@ export default function UseState(props) {
   return (
     <div className="use-state">
       <Panel breadcrumb={['hooks','useState']}>
-          <Codebox code={txt}></Codebox>
+          <div className="flex">
+            <Codebox code={txt}></Codebox>
+          </div>
           <Input  placeholder="姓名" value={state.name} onChange={e => {
             setState(Object.assign({}, state, {
-              name: e.target.value,
+              name: 1,
             }))
           }}/>  姓名: {state.name}
           <Input  placeholder="电话号码" value={state.phone} onChange={e => {
