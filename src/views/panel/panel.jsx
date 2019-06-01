@@ -3,7 +3,7 @@ import { Breadcrumb, Layout } from 'antd';
 const { Content } = Layout;
 export default function Panel(props) {
   return (
-    <div className="use-state">
+    <div>
       <Content style={{ padding: '0 50px' }}>
       <Breadcrumb style={{ margin: '16px 0' }}>
       {(props.breadcrumb || []).map((item, index) => {
