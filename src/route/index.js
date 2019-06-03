@@ -21,7 +21,6 @@ const pageConfig = [
   {
     path: '/hooks',
     title: 'hooks',
-    component: getComponent('hooks'),
     children: [{
       path: '/hooks/why',
       title: 'why hooks',
@@ -39,7 +38,13 @@ const pageConfig = [
   {
     path: './context',
     title: 'context',
-    component: getComponent('context'),
+    children: [
+      {
+        path: '/context/base',
+        title: 'context 基本使用',
+        component: getComponent('context'),
+      }
+    ]
   }
 ]
 const routerConfig = baseConfig.concat(pageConfig);
@@ -75,4 +80,4 @@ const RouteWithSubRoutes = (route) => (
     }}
   />
 )
-export { routerConfig, pageConfig, RouteWithSubRoutes }
+export { routerConfig, baseConfig, pageConfig, RouteWithSubRoutes }

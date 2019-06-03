@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import * as serviceWorker from './serviceWorker';
-import { routerConfig, RouteWithSubRoutes } from './route'
+import { baseConfig, RouteWithSubRoutes } from './route'
 import './css/common.less';
 import {
     BrowserRouter as Router
@@ -10,7 +10,7 @@ window.auth = true;
 ReactDOM.render((
     <Router>
         {
-            routerConfig.map(route => (
+            baseConfig.map(route => (
                 <RouteWithSubRoutes key={route.path} {...route}/>
             ))
         }
