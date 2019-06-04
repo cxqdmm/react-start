@@ -1,13 +1,16 @@
-import { useReducer } from 'react';
+import { useState } from 'react';
 const _state = Symbol('state');
 const _dispatch = Symbol('dispatch');
 export default class Store {
   constructor(props) {
+    this._context = props.context;
     this[_state] = {};
-    this.reducers = props.reducers || [];
+    this.modules = props.modules || [];
     this[_dispatch] = new Map();
   }
-
+  get context() {
+    return this._context;
+  }
   get state() {
     return this[_state];
   }
@@ -32,10 +35,11 @@ export default class Store {
    * @argument 该函数必须在函数式组件内部使用
    */
   processReducer = () => {
-    const out = this.reducers.reduce((out, reducer) => {
-      const [value, setValue] = useReducer(reducer.processor, reducer.initialValue);
-      out.state[reducer.name] = value;
-      out.dispatch[reducer.processor] = setValue;
+    const out = this.modules.reduce((out, module) => {
+      const [state, setState] = useState(module.initialState);
+      out.state[module.name] = state;
+      module.setState = setState;
+      out.dispatch[module.name] = module;
       return out;
     }, {
         state: {},
@@ -43,21 +47,5 @@ export default class Store {
       })
     this.state = out.state;
     this.dispatch = out.dispatch;
-  }
-
-  /**
-   * @argument 根据reducer来触发相对应的dispatch
-   * @param {*} reducer 
-   * @param {*} action 
-   */
-  processDispatch = (reducer, action) => {
-    if (!this.dispatch[reducer]) {
-      throw new Error('processDispatch must use reducer reducer as first parameter');
-    } 
-    // 异步修改数据
-    if (typeof(action) === 'function') {
-      return action(this.dispatch[reducer]);
-    }
-    this.dispatch[reducer](action);
   }
 }

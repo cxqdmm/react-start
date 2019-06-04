@@ -2,13 +2,12 @@ import React, { useState, useCallback } from 'react';
 import { Button, Input } from 'antd';
 import shopContext from '../shopContext';
 import { connect } from 'redux';
-import { ADD_GOODS, REMOVE_GOODS, shopReducer } from '../reducer/shopReducer';
 import '../less/index.module.less'
 
 function Film(props) {
   const {
     list,
-    dispatchShop
+    shop
   } = props;
 
   const [good, setGood] = useState('');
@@ -23,14 +22,7 @@ function Film(props) {
     // });
 
     // 异步
-    dispatchShop((dispatch) => {
-      setTimeout(() => {
-        dispatch({
-          type: ADD_GOODS,
-          name: good
-        });
-      }, 3000)
-    })
+    shop.add({name: good});
     setGood('');
   })
   return (
@@ -40,10 +32,7 @@ function Film(props) {
           return <div key={index}>
             <span>{goods.name}</span>
             <Button onClick={() => {
-              dispatchShop({
-                type: REMOVE_GOODS,
-                index: index,
-              })
+              shop.remove(index);
             }}>删除</Button>
           </div>
         })
@@ -58,12 +47,12 @@ function Film(props) {
 
 const mapToState = (state) => {
   return {
-    list: state.shopReducer,
+    list: state.shop,
   }
 }
-const mapToDispatch = (dispatch) => {
+const mapToModule = (modules) => {
   return {
-    dispatchShop: dispatch.bind(null, shopReducer),
+    shop: modules.shop,
   }
 }
-export default connect(shopContext, mapToState, mapToDispatch)(Film)
+export default connect(shopContext, mapToState, mapToModule)(Film)

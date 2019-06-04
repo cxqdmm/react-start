@@ -1,44 +1,37 @@
 import React, { useReducer, useContext } from 'react';
 import Store from './store';
-import Reducer from './reducer';
-// to to
-const useRedux = (reducer) => {
-  const context = React.createContext();
-  return (component) => {
-    return function (props) {
-      const [store, dispatch] = useReducer(reducer, {});
-      return <context.Provider value={{ ...store, dispatch }}>
-        <component {...props} />
-      </context.Provider>
-    }
-  }
-}
+import Module from './module';
 
 const Provider = (props) => {
   const store = props.store;
-  const context = props.context;
   store.processReducer();
-  return <context.Provider value={{ state: store.state, dispatch: store.processDispatch }}>
+  return <store.context.Provider value={{ state: store.state, modules: store.dispatch }}>
     {props.children}
-  </context.Provider>
+  </store.context.Provider>
 }
 
-function createStore(reducer) {
-  let reducers = [];
-  if (Array.isArray(reducer)) {
-    reducer.forEach(elem => {
+/**
+ * 
+ * @param {*} context 
+ * @param {*} dataModule 
+ * 这个函数用于建立store和数据模块的关联
+ */
+function createStore(context, dataModule) {
+  let modules = [];
+  if (Array.isArray(dataModule)) {
+    dataModule.forEach(elem => {
       if (typeof(elem) === 'function') {
-        reducers.push(new Reducer(elem));
+        modules.push(new Module(elem));
       }
     })
-    reducers = reducer;
   } else {
-    if (typeof(reducer) === 'function') {
-      reducers.push(new Reducer(reducer));
+    if (typeof(dataModule) === 'function') {
+      modules.push(new Module(dataModule));
     }
   }
   return new Store({
-    reducers,
+    context,
+    modules,
   })
 }
 
@@ -62,5 +55,12 @@ const connect = (context, mapState, mapDispatch) => (component) => {
     }
     return component({...props,...stateMap, ...dispatchMap});
   }
+}
+
+const useRedux = store => Component => {
+  store.processReducer();
+  return <store.context.Provider value={{ state: store.state, dispatch: store.processDispatch }}>
+    <Component />
+  </store.context.Provider>
 }
 export { useRedux, Provider, createStore, connect }
