@@ -317,11 +317,11 @@ module.exports = function(webpackEnv) {
       alias: {
         // Support React Native Web
         // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
-        'react-native': 'react-native-web',
         'view': path.resolve(process.cwd(), './src/views'),
         'hooks': path.resolve(process.cwd(), './src/hooks'),
         'util': path.resolve(process.cwd(), './src/util'),
         'src': path.resolve(process.cwd(), './src'),
+        'redux': path.resolve(process.cwd(), './src/redux'),
       },
       plugins: [
         // Adds support for installing with Plug'n'Play, leading to faster installs and adding
