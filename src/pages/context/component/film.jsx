@@ -15,13 +15,6 @@ function Film(props) {
     if (!good) {
       return;
     }
-    // 同步
-    // dispatchShop({
-    //   type: ADD_GOODS,
-    //   name: good
-    // });
-
-    // 异步
     shop.add({name: good});
     setGood('');
   })

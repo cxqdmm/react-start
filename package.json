@@ -40,6 +40,8 @@
     "less": "^3.9.0",
     "lodash": "^4.17.11",
     "mini-css-extract-plugin": "0.5.0",
+    "mobx": "^5.10.0",
+    "mobx-react": "^6.0.3",
     "optimize-css-assets-webpack-plugin": "5.0.1",
     "pnp-webpack-plugin": "1.2.1",
     "postcss-flexbugs-fixes": "4.1.0",
@@ -133,6 +135,12 @@
     ],
     "plugins": [
       [
+        "@babel/plugin-proposal-decorators",
+        {
+          "legacy": true
+        }
+      ],
+      [
         "import",
         {
           "libraryName": "antd",
@@ -142,6 +150,7 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.4.4",
     "cli-spinner": "^0.2.10",
     "inquirer": "^6.3.1",
     "less-loader": "^5.0.0",

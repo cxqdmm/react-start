@@ -5,7 +5,7 @@ import Module from './module';
 const Provider = (props) => {
   const store = props.store;
   store.processReducer();
-  return <store.context.Provider value={{ state: store.state, modules: store.dispatch }}>
+  return <store.context.Provider value={{ state: store.state, modules: store.modules }}>
     {props.children}
   </store.context.Provider>
 }
@@ -20,12 +20,12 @@ function createStore(context, dataModule) {
   let modules = [];
   if (Array.isArray(dataModule)) {
     dataModule.forEach(elem => {
-      if (typeof(elem) === 'function') {
+      if (typeof (elem) === 'function') {
         modules.push(new Module(elem));
       }
     })
   } else {
-    if (typeof(dataModule) === 'function') {
+    if (typeof (dataModule) === 'function') {
       modules.push(new Module(dataModule));
     }
   }
@@ -42,25 +42,34 @@ function createStore(context, dataModule) {
  * @param {*} mapDispatch 
  */
 const connect = (context, mapState, mapDispatch) => (component) => {
-  
+
   return function wrapComponent(props) {
     const _context = useContext(context);
     let stateMap = {};
-    let dispatchMap = {};
+    let moduleMap = {};
     if (typeof mapState === 'function') {
       stateMap = mapState(_context.state);
     }
     if (typeof mapDispatch === 'function') {
-      dispatchMap = mapDispatch(_context.dispatch);
+      moduleMap = mapDispatch(_context.modules);
     }
-    return component({...props,...stateMap, ...dispatchMap});
+    return component({ ...props, ...stateMap, ...moduleMap });
   }
 }
 
 const useRedux = store => Component => {
   store.processReducer();
-  return <store.context.Provider value={{ state: store.state, dispatch: store.processDispatch }}>
+  return <store.context.Provider value={{ state: store.state, modules: store.modules }}>
     <Component />
   </store.context.Provider>
 }
-export { useRedux, Provider, createStore, connect }
+
+
+
+
+export {
+  useRedux,
+  Provider,
+  createStore,
+  connect,
+}

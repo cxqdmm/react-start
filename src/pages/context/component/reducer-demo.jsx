@@ -20,7 +20,7 @@ function ReducerDemo(props) {
 }
 const mapToState = (state) => {
   return {
-    list: state.shopReducer,
+    list: state.shop,
   }
 }
 export default connect(shopContext, mapToState)(ReducerDemo)

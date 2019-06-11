@@ -1,12 +1,11 @@
 import { useState } from 'react';
 const _state = Symbol('state');
-const _dispatch = Symbol('dispatch');
+const _modules = Symbol('module');
 export default class Store {
   constructor(props) {
     this._context = props.context;
     this[_state] = {};
     this.modules = props.modules || [];
-    this[_dispatch] = new Map();
   }
   get context() {
     return this._context;
@@ -21,16 +20,6 @@ export default class Store {
     }
   }
 
-  get dispatch() {
-    return this[_dispatch];
-  }
-
-  set dispatch(newDispatch) {
-    if (newDispatch !== this[_dispatch]) {
-      this[_dispatch] = newDispatch;
-    }
-  }
-
   /**
    * @argument 该函数必须在函数式组件内部使用
    */
@@ -39,13 +28,13 @@ export default class Store {
       const [state, setState] = useState(module.initialState);
       out.state[module.name] = state;
       module.setState = setState;
-      out.dispatch[module.name] = module;
+      out.modules[module.name] = module.module;
       return out;
     }, {
         state: {},
-        dispatch: {}
+        modules: new Map(),
       })
     this.state = out.state;
-    this.dispatch = out.dispatch;
+    this.modules = out.modules;
   }
 }

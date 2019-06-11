@@ -1,8 +1,10 @@
 import { useRedux, Provider, createStore, connect } from './redux';
+import { observable } from './observable';
 
 export {
-  useRedux, 
-  Provider, 
+  useRedux,
+  Provider,
   createStore,
   connect,
+  observable,
 }
