@@ -1,4 +1,5 @@
 
+import { fromJS, isImmutable} from 'immutable';
 const LazyInitializeSymbol = Symbol('lazy initialize symbol');
 const pendingDecorators = Symbol('pending decorator');
 const $store = Symbol('@proxy')
@@ -11,9 +12,9 @@ function createObservable(target, prop, descriptor) {
         ? descriptor.initializer.call(target)
         : descriptor.value
       : undefined;
-      asObservableObject(target, prop).addObservableProp(target, prop, initialValue)
+    asObservableObject(target).addObservableProp(prop, initialValue)
   });
-  decoratorFactory.apply(null, arguments);
+  return decoratorFactory.apply(null, arguments);
 }
 
 function createPropDecorator(propertyCreator) {
@@ -31,7 +32,7 @@ function createPropDecorator(propertyCreator) {
       };
       return createPropertyInitializerDescriptor(prop);
     }
-    decorator.apply(null, arguments);
+    return decorator.apply(null, arguments);
   }
 }
 // 返回初始的Descriptor
@@ -75,37 +76,86 @@ function addHiddenProp(object, propName, value) {
   });
 }
 
-function asObservableObject(target, defaultEnhancer) {
+function asObservableObject(target) {
   if (Object.prototype.hasOwnProperty.call(target, $store))
-  return target[$store];
+    return target[$store];
   const adm = new ObservableObjectAdministration(target);
   addHiddenProp(target, $store, adm);
   return adm;
 }
 
-function ObservableObjectAdministration(target) {
-  this.$value = new Map(); 
-  this.target = target;
-}
-ObservableObjectAdministration.prototype.read = function (prop) {
-  this.$value[prop].get(prop);
-}
-ObservableObjectAdministration.prototype.write = function (prop, value) {
-  this.$value[prop].set(prop, value);
-}
-ObservableObjectAdministration.prototype.addObservableProp = function (target, prop, initvalue) {
-  this.$value[prop].set(prop, initvalue);
-  return {
-    configurable: true,
-    enumerable: true,
-    get: function () {
-      return this[$store].read(prop);
-    },
-    set: function (v) {
-        this[$store].write(prop, v);
+// 数据源的代理 代理内部管理数据
+class ObservableObjectAdministration {
+  constructor(target) {
+    this.$value = new Map();
+    this.$dispatch = new Map();
+    this.target = target;
+  }
+  read(prop) {
+    let value = this.$value.get(prop);
+    if (isImmutable(value)) {
+      return value.toJS();
     }
+    return value;
+  }
+  write(prop, value) {
+    if (!isImmutable(value)) {
+      value = fromJS(value)
+    }
+    this.$value.set(prop, value);
+    const dispatch = this.$dispatch.get(prop);
+    if (dispatch) {
+      dispatch(value);
+    }
+  }
+  addObservableProp(prop, value) {
+    // to do 添加enhancer 生成observableValue
+    let target = this.target;
+    //observableValue 实际上是一个proxy，可以很方便监控对象的任何行为
+    this.$value.set(prop, fromJS(value));
+    Object.defineProperty(target, prop, {
+      configurable: true,
+      enumerable: true,
+      get: function () {
+        return this[$store].read(prop);
+      },
+      set: function (v) {
+        this[$store].write(prop, v);
+      }
+    })
+  }
+  outputProps() {
+    return Object.keys(this.$value);
+  }
+  setDispatch(prop, dispatch) {
+    this.$dispatch.set(prop, dispatch);
+  }
+  getDispatch(prop) {
+    return this.$dispatch.get(prop);
   }
 }
 
+// 监控属性值的操作，用proxy实现
+
+function getObservableProps(model) {
+  if (!model[pendingDecorators]) {
+    return [];
+  }
+  return Object.keys(model[pendingDecorators]);
+}
+function getObservablePropDispatch(model, prop) {
+  if (!model[$store]) {
+    throw new Error('model is not observable')
+  }
+  return model[$store].getDispatch(prop);
+}
+function setObservablePropDispatch(model, prop, dispatch) {
+  if (!model[$store]) {
+    throw new Error('model is not observable')
+  }
+  model[$store].setDispatch(prop, dispatch);
+}
+
 let observable = createObservable;
-export { observable }
+
+export { observable, getObservableProps, setObservablePropDispatch, getObservablePropDispatch }

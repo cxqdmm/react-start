@@ -1,4 +1,4 @@
-import React, { useReducer, useContext } from 'react';
+import React, { useContext } from 'react';
 import Store from './store';
 import Module from './module';
 
@@ -20,12 +20,14 @@ function createStore(context, dataModule) {
   let modules = [];
   if (Array.isArray(dataModule)) {
     dataModule.forEach(elem => {
-      if (typeof (elem) === 'function') {
+      if (typeof (elem) === 'object') {
+        elem.context = context;
         modules.push(new Module(elem));
       }
     })
   } else {
-    if (typeof (dataModule) === 'function') {
+    if (typeof (dataModule) === 'object') {
+      dataModule.context = context;
       modules.push(new Module(dataModule));
     }
   }
@@ -41,19 +43,19 @@ function createStore(context, dataModule) {
  * @param {*} mapState 
  * @param {*} mapDispatch 
  */
-const connect = (context, mapState, mapDispatch) => (component) => {
-
+const connect = modules => component => {
   return function wrapComponent(props) {
-    const _context = useContext(context);
-    let stateMap = {};
-    let moduleMap = {};
-    if (typeof mapState === 'function') {
-      stateMap = mapState(_context.state);
-    }
-    if (typeof mapDispatch === 'function') {
-      moduleMap = mapDispatch(_context.modules);
-    }
-    return component({ ...props, ...stateMap, ...moduleMap });
+    let moduleArr = [].concat(modules);
+    let contextMap = moduleArr.reduce((out, item) => {
+      if (item.context) {
+        out.set(item.context,true);
+      }
+      return out;
+    }, new Map())
+    contextMap.forEach((flag, context) => {
+      useContext(context)
+    })
+    return component({ ...props});
   }
 }
 

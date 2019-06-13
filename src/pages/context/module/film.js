@@ -1,7 +1,14 @@
 import { observable } from 'redux';
-
-class shopModule {
+import { fetch } from 'util/axios';
+class film {
   @observable list = []
+  queryFilm() {
+    fetch('/film/queryList', 'get').then(res => {
+      this.setState({
+        list: res.data.list,
+      });
+    });
+  }
   add(goods) {
     const newList = this.list.push(goods);
     this.setState({
@@ -15,5 +22,4 @@ class shopModule {
     })
   }
 }
-
-export default new shopModule();
+export default new film();

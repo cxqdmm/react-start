@@ -1,17 +1,18 @@
 import React from 'react';
-import ReducerDemo from './component/reducer-demo';
-import ContextReducerDemo from './component/context-reducer-demo';
+import ShopPanel from './component/shopPanel';
+import FilmPanel from './component/filmPanel';
 import shop from './module/shop';
-import shopContext from './shopContext';
+import film from './module/film';
 import { Provider, createStore} from 'redux';
 import './less/index.module.less';
-const store = createStore(shopContext, shop);
+const context = React.createContext();
+const store = createStore(context, [shop,film]);
 function Context (props){
   return (
    <div className="flex">
       <Provider store={store}>
-        <ReducerDemo className="flex-1" styleName="m-10"></ReducerDemo>
-        <ContextReducerDemo className="flex-1" styleName="m-10"></ContextReducerDemo>
+        <ShopPanel className="flex-1" styleName="m-10"></ShopPanel>
+        <FilmPanel className="flex-1" styleName="m-10"></FilmPanel>
       </Provider>
    </div>
   )
