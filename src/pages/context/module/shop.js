@@ -1,17 +1,25 @@
 import { observable } from 'redux';
+import { fetch } from 'util/axios';
 
 class shopModule {
   @observable list = []
+  queryShopList() {
+    fetch('/shop/queryShopList', 'get').then(res => {
+      this.list = res.data.list;
+    });
+  }
   add(goods) {
-    const newList = this.list.push(goods);
+    let list = this.list;
+    list.push(goods);
     this.setState({
-      list: newList,
+      list: list,
     })
   }
   remove(index) {
-    const newList = this.list.splice(index, 1);
+    let list = this.list;
+    list.splice(index, 1);
     this.setState({
-      list: newList,
+      list: list,
     })
   }
 }

@@ -26,7 +26,8 @@ export default class Store {
     const out = this._modules.reduce((out, module) => {
       out.state[module.name] = {};
       module.observableProps.forEach(prop => {
-        const [state, setState] = useState( module.getPropValue(prop));
+        let value = module.getPropValue(prop)
+        const [state, setState] = useState(value);
         out.state[module.name][prop] = state;
         module.setPropDispatch(prop, setState);
       })

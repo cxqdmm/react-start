@@ -60,10 +60,12 @@ const connect = modules => component => {
 }
 
 const useRedux = store => Component => {
-  store.processReducer();
-  return <store.context.Provider value={{ state: store.state, modules: store.modules }}>
-    <Component />
-  </store.context.Provider>
+  return function Privider(props) {
+    store.processReducer();
+    return <store.context.Provider value={{ state: store.state, modules: store.modules }}>
+      <Component {...props}/>
+    </store.context.Provider>
+  }
 }
 
 

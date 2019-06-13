@@ -413,6 +413,7 @@ module.exports = function(webpackEnv) {
                         }
                       },
                       webpackHotModuleReloading: true,
+                      autoResolveMultipleImports: true,
                     }
                   ]
                 ],

@@ -21,12 +21,9 @@ export default class Module {
   setState(data) {
     const props = Object.getOwnPropertyNames(data);
     props.forEach(prop => {
-      const dispatch = getObservablePropDispatch.apply(this, [this, prop]);
+      console.log('dispatch => ',this.constructor.name, 'prop=',prop);
       this[prop] = data[prop];
-      if (!dispatch) {
-        throw new Error(`${prop} is not observable, please use observable decorater to ${prop}`)
-      } 
-      dispatch(data[prop]);
+
     })
   }
   get module() {

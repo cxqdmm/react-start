@@ -99,11 +99,15 @@ class ObservableObjectAdministration {
     return value;
   }
   write(prop, value) {
+    let immutableValue = value;
     if (!isImmutable(value)) {
-      value = fromJS(value)
+      immutableValue = fromJS(value)
     }
-    this.$value.set(prop, value);
+    this.$value.set(prop, immutableValue);
     const dispatch = this.$dispatch.get(prop);
+    if (!dispatch) {
+      throw new Error(`${prop} is not observable, please use observable decorater to ${prop}`)
+    } 
     if (dispatch) {
       dispatch(value);
     }
