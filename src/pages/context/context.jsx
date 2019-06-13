@@ -8,7 +8,7 @@ import { createStore, useRedux } from 'redux';
 import './less/index.module.less';
 const context = React.createContext();
 const store = createStore(context, [shop,film]);
-function Context (props){
+function ContextPage (props){
   return (
     <div>
       <div className="flex">
@@ -19,4 +19,4 @@ function Context (props){
     </div>
   )
 }
-export default useRedux(store)(Context);
+export default useRedux(store)(ContextPage);

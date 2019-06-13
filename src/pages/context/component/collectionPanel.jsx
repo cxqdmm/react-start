@@ -6,7 +6,11 @@ import filmModule from '../module/film';
 import shopModule from '../module/shop';
 
 function collectionPanel (props){
-  
+  let list = [].concat(filmModule.list, shopModule.list);
+  let costSum = list.reduce((out, item) => {
+    out += item.cost || 0;
+    return out;
+  },0)
   return (
     <div styleName="box" className={props.className}>
       <div styleName="head">费用汇总</div>
@@ -16,16 +20,15 @@ function collectionPanel (props){
           <Card>
             <Statistic
               title="费用"
-              value={11.28}
+              value={costSum}
               precision={2}
               valueStyle={{ color: '#3f8600', width: 200}}
-              prefix={<Icon type="arrow-up" />}
-              suffix="%"
+              suffix="元"
             />
           </Card>
         </Col>
         <Col span={12} >
-        <Descriptions title="User Info" bordered>
+        <Descriptions title="项目" bordered>
           <Descriptions.Item label="shop">{shopModule.list.length}</Descriptions.Item>
           <Descriptions.Item label="film">{filmModule.list.length}</Descriptions.Item>
         </Descriptions>

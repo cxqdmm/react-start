@@ -26,7 +26,7 @@ function ShopPanel(props) {
     if (!name) {
       return;
     }
-    shopModule.add({name: name, cost: cost});
+    shopModule.add({name: name, cost: ~~cost});
     setName('');
     setCost('');
   })

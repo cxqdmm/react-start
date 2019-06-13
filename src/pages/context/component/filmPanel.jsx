@@ -26,7 +26,7 @@ function filmPanel (props){
     if (!filmname) {
       return;
     }
-    filmModule.add({name: filmname, cost: cost});
+    filmModule.add({name: filmname, cost: ~~cost});
     setFilmname('');
   })
   return (
